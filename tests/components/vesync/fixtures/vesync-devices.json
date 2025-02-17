@@ -117,6 +117,15 @@
         "deviceStatus": "on",
         "connectionStatus": "online",
         "configModule": "configModule"
+      },
+      {
+        "cid": "superior6000s",
+        "deviceType": "LEH-S601S-WUS",
+        "deviceName": "Superior6000s",
+        "subDeviceNo": null,
+        "deviceStatus": "on",
+        "connectionStatus": "online",
+        "configModule": "configModule"
       }
     ]
   }

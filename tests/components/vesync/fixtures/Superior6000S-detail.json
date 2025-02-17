@@ -1,0 +1,50 @@
+{
+  "traceId": "1733323559",
+  "code": 0,
+  "msg": "request success",
+  "module": null,
+  "stacktrace": null,
+  "result": {
+    "traceId": "1733323559",
+    "code": 0,
+    "result": {
+      "powerSwitch": 1,
+      "humidity": 42,
+      "targetHumidity": 48,
+      "virtualLevel": 5,
+      "mistLevel": 2,
+      "workMode": "humidity",
+      "waterLacksState": 0,
+      "waterTankLifted": 0,
+      "autoStopSwitch": 1,
+      "autoStopState": 0,
+      "screenSwitch": 1,
+      "screenState": 1,
+      "scheduleCount": 0,
+      "timerRemain": 0,
+      "errorCode": 0,
+      "autoPreference": 1,
+      "childLockSwitch": 0,
+      "filterLifePercent": 90,
+      "temperature": 662,
+      "maxLevelNotify": 0,
+      "waterShortageDryingSwitch": 1,
+      "humidityPreference": 1,
+      "dryingMode": {
+        "dryingLevel": 1,
+        "autoDryingSwitch": 1,
+        "dryingState": 2,
+        "dryingRemain": 7200
+      },
+      "isSupportSensor": 1,
+      "sensorContent": {
+        "sensorStatus": "noDevices"
+      },
+      "waterPump": {
+        "cleanStatus": 0,
+        "remainTime": 0,
+        "totalTime": 65
+      }
+    }
+  }
+}
