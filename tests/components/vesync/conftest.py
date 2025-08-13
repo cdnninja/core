@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
+from aioresponses import aioresponses
 import pytest
 from pyvesync import VeSync
 from pyvesync.base_devices.bulb_base import VeSyncBulb
 from pyvesync.base_devices.fan_base import VeSyncFanBase
 from pyvesync.base_devices.outlet_base import VeSyncOutlet
 from pyvesync.base_devices.switch_base import VeSyncSwitch
-import requests_mock
 
 from homeassistant.components.vesync import DOMAIN
 from homeassistant.config_entries import ConfigEntry
@@ -23,10 +23,19 @@ from .common import mock_multiple_device_responses
 from tests.common import MockConfigEntry
 
 
+@pytest.fixture(name="aio_mock")
+def aio_mock():
+    """Create a mock for all aiohttp requests in tests."""
+    with aioresponses() as m:
+        yield m
+
+
 @pytest.fixture(autouse=True)
 def patch_vesync_login():
-    """Patch VeSync.login to always be an AsyncMock."""
-    with patch("pyvesync.vesync.VeSync.login", new=AsyncMock(return_value=True)):
+    """Patch VeSync to disable firmware checks."""
+    with patch(
+        "pyvesync.vesync.VeSync.check_firmware", new=AsyncMock(return_value=True)
+    ):
         yield
 
 
@@ -73,7 +82,8 @@ def manager_fixture() -> VeSync:
     devices_container.humidifers = humidifers
 
     mock_vesync = Mock(VeSync)
-    mock_vesync.login = AsyncMock(return_value=True)
+    mock_vesync.enabled = True
+    mock_vesync.login = AsyncMock(return_value=False)
     mock_vesync.update = AsyncMock()
     mock_vesync.devices = devices_container
     mock_vesync._dev_list = {
@@ -183,7 +193,7 @@ def humidifier_300s_fixture():
 
 @pytest.fixture(name="humidifier_config_entry")
 async def humidifier_config_entry(
-    hass: HomeAssistant, requests_mock: requests_mock.Mocker, config
+    hass: HomeAssistant, aio_mock: aioresponses, config
 ) -> MockConfigEntry:
     """Create a mock VeSync config entry for `Humidifier 200s`."""
     entry = MockConfigEntry(
@@ -194,7 +204,7 @@ async def humidifier_config_entry(
     entry.add_to_hass(hass)
 
     device_name = "Humidifier 200s"
-    mock_multiple_device_responses(requests_mock, [device_name])
+    mock_multiple_device_responses(aio_mock, [device_name])
     await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
 
@@ -218,7 +228,7 @@ async def install_humidifier_device(
 
 @pytest.fixture(name="fan_config_entry")
 async def fan_config_entry(
-    hass: HomeAssistant, requests_mock: requests_mock.Mocker, config
+    hass: HomeAssistant, aio_mock: aioresponses, config
 ) -> MockConfigEntry:
     """Create a mock VeSync config entry for `SmartTowerFan`."""
     entry = MockConfigEntry(
@@ -229,7 +239,7 @@ async def fan_config_entry(
     entry.add_to_hass(hass)
 
     device_name = "SmartTowerFan"
-    mock_multiple_device_responses(requests_mock, [device_name])
+    mock_multiple_device_responses(aio_mock, [device_name])
     await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
 
@@ -238,7 +248,7 @@ async def fan_config_entry(
 
 @pytest.fixture(name="switch_old_id_config_entry")
 async def switch_old_id_config_entry(
-    hass: HomeAssistant, requests_mock: requests_mock.Mocker, config
+    hass: HomeAssistant, aio_mock: aioresponses, config
 ) -> MockConfigEntry:
     """Create a mock VeSync config entry for `switch` with the old unique ID approach."""
     entry = MockConfigEntry(
@@ -253,6 +263,6 @@ async def switch_old_id_config_entry(
     wall_switch = "Wall Switch"
     humidifer = "Humidifier 200s"
 
-    mock_multiple_device_responses(requests_mock, [wall_switch, humidifer])
+    mock_multiple_device_responses(aio_mock, [wall_switch, humidifer])
 
     return entry

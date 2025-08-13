@@ -2,8 +2,8 @@
 
 from datetime import timedelta
 
+from aioresponses import aioresponses
 from freezegun.api import FrozenDateTimeFactory
-import requests_mock
 
 from homeassistant.components.vesync.const import DOMAIN, UPDATE_INTERVAL
 from homeassistant.config_entries import ConfigEntryState
@@ -23,7 +23,7 @@ from tests.common import MockConfigEntry, async_fire_time_changed
 async def test_entity_update(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
-    requests_mock: requests_mock.Mocker,
+    aio_mock: aioresponses,
 ) -> None:
     """Test Vesync coordinator data update.
 
@@ -38,7 +38,7 @@ async def test_entity_update(
         entry_id="1",
     )
 
-    mock_multiple_device_responses(requests_mock, ["Air Purifier 400s", "Outlet"])
+    mock_multiple_device_responses(aio_mock, ["Air Purifier 400s", "Outlet"])
 
     expected_entities = [
         # From "Air Purifier 400s"
@@ -70,9 +70,9 @@ async def test_entity_update(
     assert hass.states.get("sensor.outlet_energy_use_weekly").state == "0"
 
     # Update the mock responses
-    mock_air_purifier_400s_update_response(requests_mock)
-    mock_outlet_energy_response(requests_mock, "Outlet", {"totalEnergy": 2.2})
-    mock_device_response(requests_mock, "Outlet", {"voltage": 129})
+    mock_air_purifier_400s_update_response(aio_mock)
+    mock_outlet_energy_response(aio_mock, "Outlet", {"totalEnergy": 2.2})
+    mock_device_response(aio_mock, "Outlet", {"voltage": 129})
 
     freezer.tick(timedelta(seconds=UPDATE_INTERVAL))
     async_fire_time_changed(hass)

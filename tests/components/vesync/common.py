@@ -75,18 +75,52 @@ def mock_devices_response(aio_mock: aioresponses, device_name: str) -> None:
     ]
 
     aio_mock.post(
-        "https://smartapi.vesync.com/cloud/v1/deviceManaged/devices",
-        json={"code": 0, "result": {"list": device_list}},
+        "https://smartapi.vesync.com/globalPlatform/api/accountAuth/v1/authByPWDOrOTM",
+        payload=load_json_object_fixture("vesync-auth.json", DOMAIN),
     )
     aio_mock.post(
-        "https://smartapi.vesync.com/cloud/v1/user/login",
-        json=load_json_object_fixture("vesync-login.json", DOMAIN),
+        "https://smartapi.vesync.com/user/api/accountManage/v1/loginByAuthorizeCode4Vesync",
+        payload=load_json_object_fixture("vesync-login.json", DOMAIN),
     )
+    aio_mock.post(
+        "https://smartapi.vesync.com/cloud/v1/deviceManaged/devices",
+        payload={
+            "code": 0,
+            "traceId": "1234",
+            "msg": None,
+            "module": None,
+            "stacktrace": None,
+            "result": {
+                "total": len(device_list),
+                "pageSize": len(device_list),
+                "pageNo": 1,
+                "list": device_list,
+            },
+        },
+        repeat=True,
+    )
+    aio_mock.post(
+        "https://smartapi.vesync.com/cloud/v2/deviceManaged/getFirmwareUpdateInfoList",
+        payload={
+            "code": 0,
+            "traceId": "1234",
+            "msg": None,
+            "module": None,
+            "stacktrace": None,
+            "result": {
+                "total": len(device_list),
+                "pageSize": len(device_list),
+                "pageNo": 1,
+                "list": device_list,
+            },
+        },
+        repeat=True,
+    )
+
     for fixture in DEVICE_FIXTURES[device_name]:
-        aio_mock.request(
-            fixture[0],
+        getattr(aio_mock, fixture[0])(
             f"https://smartapi.vesync.com{fixture[1]}",
-            json=load_json_object_fixture(fixture[2], DOMAIN),
+            payload=load_json_object_fixture(fixture[2], DOMAIN),
         )
 
 
@@ -101,19 +135,36 @@ def mock_multiple_device_responses(
     ]
 
     aio_mock.post(
-        "https://smartapi.vesync.com/cloud/v1/deviceManaged/devices",
-        json={"code": 0, "result": {"list": device_list}},
+        "https://smartapi.vesync.com/globalPlatform/api/accountAuth/v1/authByPWDOrOTM",
+        payload=load_json_object_fixture("vesync-auth.json", DOMAIN),
     )
     aio_mock.post(
-        "https://smartapi.vesync.com/cloud/v1/user/login",
-        json=load_json_object_fixture("vesync-login.json", DOMAIN),
+        "https://smartapi.vesync.com/user/api/accountManage/v1/loginByAuthorizeCode4Vesync",
+        payload=load_json_object_fixture("vesync-login.json", DOMAIN),
     )
+    aio_mock.post(
+        "https://smartapi.vesync.com/cloud/v1/deviceManaged/devices",
+        payload={
+            "code": 0,
+            "traceId": "1234",
+            "msg": None,
+            "module": None,
+            "stacktrace": None,
+            "result": {
+                "total": len(device_list),
+                "pageSize": len(device_list),
+                "pageNo": 1,
+                "list": device_list,
+            },
+        },
+        repeat=True,
+    )
+
     for device_name in device_names:
         for fixture in DEVICE_FIXTURES[device_name]:
-            aio_mock.request(
-                fixture[0],
+            getattr(aio_mock, fixture[0])(
                 f"https://smartapi.vesync.com{fixture[1]}",
-                json=load_json_object_fixture(fixture[2], DOMAIN),
+                payload=load_json_object_fixture(fixture[2], DOMAIN),
             )
 
 
@@ -122,10 +173,9 @@ def mock_air_purifier_400s_update_response(aio_mock: aioresponses) -> None:
 
     device_name = "Air Purifier 400s"
     for fixture in DEVICE_FIXTURES[device_name]:
-        aio_mock.request(
-            fixture[0],
+        getattr(aio_mock, fixture[0])(
             f"https://smartapi.vesync.com{fixture[1]}",
-            json=load_json_object_fixture(
+            payload=load_json_object_fixture(
                 "air-purifier-400s-detail-updated.json", DOMAIN
             ),
         )
@@ -150,10 +200,9 @@ def mock_device_response(
     if len(fixtures) > 0:
         item = fixtures[0]
 
-        aio_mock.request(
-            item[0],
+        getattr(aio_mock, item[0])(
             f"https://smartapi.vesync.com{item[1]}",
-            json=load_and_merge(item[2]),
+            payload=load_and_merge(item[2]),
         )
 
 
@@ -176,10 +225,9 @@ def mock_outlet_energy_response(
     if len(fixtures) > 1:
         item = fixtures[1]
 
-        aio_mock.request(
-            item[0],
+        getattr(aio_mock, item[0])(
             f"https://smartapi.vesync.com{item[1]}",
-            json=load_and_merge(item[2]),
+            payload=load_and_merge(item[2]),
         )
 
 

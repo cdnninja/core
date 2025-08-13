@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from pyvesync.helpers import Helpers
+from pyvesync.utils.helpers import Helpers
 from syrupy.assertion import SnapshotAssertion
 from syrupy.matchers import path_type
 
