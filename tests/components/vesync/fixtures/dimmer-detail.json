@@ -1,5 +1,7 @@
 {
   "code": 0,
+  "msg": "request success",
+  "traceId": "1234",
   "deviceStatus": "on",
   "activeTime": 100,
   "brightness": 50,

@@ -33,21 +33,21 @@ DEVICE_FIXTURES: dict[str, list[tuple[str, str, str]]] = {
     "Air Purifier 131s": [
         (
             "post",
-            "/131airPurifier/v1/device/deviceDetail",
+            "/cloud/v1/deviceManaged/deviceDetail",
             "air-purifier-131s-detail.json",
         )
     ],
     "Air Purifier 200s": [
-        ("post", "/cloud/v2/deviceManaged/bypassV2", "device-detail.json")
+        ("post", "/cloud/v2/deviceManaged/bypassV2", "air-purifier-detail.json")
     ],
     "Air Purifier 400s": [
-        ("post", "/cloud/v2/deviceManaged/bypassV2", "air-purifier-400s-detail.json")
+        ("post", "/cloud/v2/deviceManaged/bypassV2", "air-purifier-detail.json")
     ],
     "Air Purifier 600s": [
-        ("post", "/cloud/v2/deviceManaged/bypassV2", "device-detail.json")
+        ("post", "/cloud/v2/deviceManaged/bypassV2", "air-purifier-detail.json")
     ],
     "Dimmable Light": [
-        ("post", "/SmartBulb/v1/device/devicedetail", "device-detail.json")
+        ("post", "/cloud/v1/deviceManaged/deviceDetail", "device-detail.json")
     ],
     "Temperature Light": [
         ("post", "/cloud/v1/deviceManaged/bypass", "device-detail.json")
@@ -57,9 +57,11 @@ DEVICE_FIXTURES: dict[str, list[tuple[str, str, str]]] = {
         ("get", "/v1/device/outlet/energy/week", "outlet-energy-week.json"),
     ],
     "Wall Switch": [
-        ("post", "/inwallswitch/v1/device/devicedetail", "device-detail.json")
+        ("post", "/cloud/v1/deviceManaged/deviceDetail", "device-detail.json")
     ],
-    "Dimmer Switch": [("post", "/dimmer/v1/device/devicedetail", "dimmer-detail.json")],
+    "Dimmer Switch": [
+        ("post", "/cloud/v1/deviceManaged/deviceDetail", "dimmer-detail.json")
+    ],
     "SmartTowerFan": [
         ("post", "/cloud/v2/deviceManaged/bypassV2", "SmartTowerFan-detail.json")
     ],
@@ -85,25 +87,8 @@ def mock_devices_response(aio_mock: aioresponses, device_name: str) -> None:
     aio_mock.post(
         "https://smartapi.vesync.com/cloud/v1/deviceManaged/devices",
         payload={
-            "code": 0,
             "traceId": "1234",
-            "msg": None,
-            "module": None,
-            "stacktrace": None,
-            "result": {
-                "total": len(device_list),
-                "pageSize": len(device_list),
-                "pageNo": 1,
-                "list": device_list,
-            },
-        },
-        repeat=True,
-    )
-    aio_mock.post(
-        "https://smartapi.vesync.com/cloud/v2/deviceManaged/getFirmwareUpdateInfoList",
-        payload={
             "code": 0,
-            "traceId": "1234",
             "msg": None,
             "module": None,
             "stacktrace": None,
@@ -121,6 +106,7 @@ def mock_devices_response(aio_mock: aioresponses, device_name: str) -> None:
         getattr(aio_mock, fixture[0])(
             f"https://smartapi.vesync.com{fixture[1]}",
             payload=load_json_object_fixture(fixture[2], DOMAIN),
+            repeat=True,
         )
 
 
@@ -145,8 +131,8 @@ def mock_multiple_device_responses(
     aio_mock.post(
         "https://smartapi.vesync.com/cloud/v1/deviceManaged/devices",
         payload={
-            "code": 0,
             "traceId": "1234",
+            "code": 0,
             "msg": None,
             "module": None,
             "stacktrace": None,
@@ -165,6 +151,7 @@ def mock_multiple_device_responses(
             getattr(aio_mock, fixture[0])(
                 f"https://smartapi.vesync.com{fixture[1]}",
                 payload=load_json_object_fixture(fixture[2], DOMAIN),
+                repeat=True,
             )
 
 
@@ -176,7 +163,7 @@ def mock_air_purifier_400s_update_response(aio_mock: aioresponses) -> None:
         getattr(aio_mock, fixture[0])(
             f"https://smartapi.vesync.com{fixture[1]}",
             payload=load_json_object_fixture(
-                "air-purifier-400s-detail-updated.json", DOMAIN
+                "air-purifier-detail-updated.json", DOMAIN
             ),
         )
 
@@ -203,6 +190,7 @@ def mock_device_response(
         getattr(aio_mock, item[0])(
             f"https://smartapi.vesync.com{item[1]}",
             payload=load_and_merge(item[2]),
+            repeat=True,
         )
 
 
@@ -228,6 +216,7 @@ def mock_outlet_energy_response(
         getattr(aio_mock, item[0])(
             f"https://smartapi.vesync.com{item[1]}",
             payload=load_and_merge(item[2]),
+            repeat=True,
         )
 
 

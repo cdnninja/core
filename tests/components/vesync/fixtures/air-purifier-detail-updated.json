@@ -1,5 +1,7 @@
 {
   "code": 0,
+  "msg": "request success",
+  "traceId": "1234",
   "brightNess": "50",
   "result": {
     "light": {
@@ -22,6 +24,7 @@
       "enabled": true,
       "filter_life": 99,
       "level": 1,
+      "device_error_code": 0,
       "display": true,
       "display_forever": false,
       "child_lock": false,
@@ -29,9 +32,9 @@
       "air_quality": 15,
       "air_quality_value": 1,
       "configuration": {
-        "auto_target_humidity": 40,
         "display": true,
-        "automatic_stop": true
+        "display_forever": true,
+        "auto_preference": null
       }
     },
     "code": 0

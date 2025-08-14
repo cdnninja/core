@@ -65,7 +65,7 @@ def _setup_entities(
                 entities.append(VeSyncTunableWhiteLightHA(dev, coordinator))
             elif dev.supports_brightness:
                 entities.append(VeSyncDimmableLightHA(dev, coordinator))
-        elif isinstance(dev, VeSyncSwitch) and dev.supports_brightness:
+        elif isinstance(dev, VeSyncSwitch) and dev.supports_dimmable:
             entities.append(VeSyncDimmableLightHA(dev, coordinator))
 
     async_add_entities(entities, update_before_add=True)
