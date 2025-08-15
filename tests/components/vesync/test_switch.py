@@ -61,8 +61,14 @@ async def test_switch_state(
 @pytest.mark.parametrize(
     ("action", "command"),
     [
-        (SERVICE_TURN_ON, "pyvesync.vesyncfan.VeSyncHumid200300S.turn_on_display"),
-        (SERVICE_TURN_OFF, "pyvesync.vesyncfan.VeSyncHumid200300S.turn_off_display"),
+        (
+            SERVICE_TURN_ON,
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.toggle_display",
+        ),
+        (
+            SERVICE_TURN_OFF,
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.toggle_display",
+        ),
     ],
 )
 async def test_turn_on_off_display_success(
@@ -97,8 +103,14 @@ async def test_turn_on_off_display_success(
 @pytest.mark.parametrize(
     ("action", "command"),
     [
-        (SERVICE_TURN_ON, "pyvesync.vesyncfan.VeSyncHumid200300S.turn_on_display"),
-        (SERVICE_TURN_OFF, "pyvesync.vesyncfan.VeSyncHumid200300S.turn_off_display"),
+        (
+            SERVICE_TURN_ON,
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.toggle_display",
+        ),
+        (
+            SERVICE_TURN_OFF,
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.toggle_display",
+        ),
     ],
 )
 async def test_turn_on_off_display_raises_error(

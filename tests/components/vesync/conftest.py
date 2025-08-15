@@ -31,7 +31,7 @@ def aio_mock():
 
 
 @pytest.fixture(autouse=True)
-def patch_vesync_login():
+def patch_vesync_firmware():
     """Patch VeSync to disable firmware checks."""
     with patch(
         "pyvesync.vesync.VeSync.check_firmware", new=AsyncMock(return_value=True)
@@ -83,7 +83,7 @@ def manager_fixture() -> VeSync:
 
     mock_vesync = Mock(VeSync)
     mock_vesync.enabled = True
-    mock_vesync.login = AsyncMock(return_value=False)
+    mock_vesync.login = AsyncMock(return_value=True)
     mock_vesync.update = AsyncMock()
     mock_vesync.devices = devices_container
     mock_vesync._dev_list = {

@@ -73,7 +73,9 @@ async def test_set_target_humidity_invalid(
     # Setting value out of range results in ServiceValidationError and
     # VeSyncHumid200300S.set_humidity does not get called.
     with (
-        patch("pyvesync.vesyncfan.VeSyncHumid200300S.set_humidity") as method_mock,
+        patch(
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.set_humidity"
+        ) as method_mock,
         pytest.raises(ServiceValidationError),
     ):
         await hass.services.async_call(
@@ -102,7 +104,7 @@ async def test_set_target_humidity(
     with (
         expectation,
         patch(
-            "pyvesync.vesyncfan.VeSyncHumid200300S.set_humidity",
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.set_humidity",
             return_value=api_response,
         ) as method_mock,
     ):
@@ -133,7 +135,8 @@ async def test_turn_on(
     with (
         expectation,
         patch(
-            "pyvesync.vesyncfan.VeSyncHumid200300S.turn_on", return_value=api_response
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.turn_on",
+            return_value=api_response,
         ) as method_mock,
     ):
         with patch(
@@ -168,7 +171,8 @@ async def test_turn_off(
     with (
         expectation,
         patch(
-            "pyvesync.vesyncfan.VeSyncHumid200300S.turn_off", return_value=api_response
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.turn_off",
+            return_value=api_response,
         ) as method_mock,
     ):
         with patch(
@@ -193,7 +197,7 @@ async def test_set_mode_invalid(
     """Test handling of invalid value in set_mode method."""
 
     with patch(
-        "pyvesync.vesyncfan.VeSyncHumid200300S.set_humidity_mode"
+        "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.set_humidity_mode"
     ) as method_mock:
         with pytest.raises(HomeAssistantError):
             await hass.services.async_call(
@@ -222,7 +226,7 @@ async def test_set_mode(
     with (
         expectation,
         patch(
-            "pyvesync.vesyncfan.VeSyncHumid200300S.set_humidity_mode",
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.set_humidity_mode",
             return_value=api_response,
         ) as method_mock,
     ):
