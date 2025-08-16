@@ -2,41 +2,24 @@
   "code": 0,
   "msg": "request success",
   "traceId": "1234",
-  "brightNess": "50",
   "result": {
-    "light": {
-      "brightness": 50,
-      "colorTempe": 5400
-    },
+    "code": 0,
     "result": {
-      "brightness": 50,
-      "red": 178.5,
-      "green": 255,
-      "blue": 25.5,
-      "colorMode": "rgb",
-      "humidity": 35,
-      "mist_virtual_level": 6,
-      "mode": "manual",
-      "water_lacks": true,
-      "water_tank_lifted": true,
-      "automatic_stop_reach_target": true,
-      "night_light_brightness": 10,
       "enabled": true,
       "filter_life": 99,
+      "mode": "manual",
       "level": 1,
       "device_error_code": 0,
+      "air_quality": 1,
+      "air_quality_value": 5,
       "display": true,
-      "display_forever": false,
       "child_lock": false,
-      "night_light": "off",
-      "air_quality": 5,
-      "air_quality_value": 1,
       "configuration": {
         "display": true,
         "display_forever": true,
         "auto_preference": null
-      }
-    },
-    "code": 0
+      },
+      "night_light": "off"
+    }
   }
 }
