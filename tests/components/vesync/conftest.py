@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from collections.abc import Iterator
+from itertools import chain
+from types import MappingProxyType
+from unittest.mock import AsyncMock, Mock, patch
 
 from aioresponses import aioresponses
 import pytest
 from pyvesync import VeSync
 from pyvesync.base_devices.bulb_base import VeSyncBulb
 from pyvesync.base_devices.fan_base import VeSyncFanBase
+from pyvesync.base_devices.humidifier_base import HumidifierState, VeSyncHumidifier
 from pyvesync.base_devices.outlet_base import VeSyncOutlet
 from pyvesync.base_devices.switch_base import VeSyncSwitch
+from pyvesync.const import HumidifierFeatures
 
 from homeassistant.components.vesync import DOMAIN
 from homeassistant.config_entries import ConfigEntry
@@ -18,7 +23,7 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 
-from .common import mock_multiple_device_responses
+from .common import DEVICE_CATEGORIES, mock_multiple_device_responses
 
 from tests.common import MockConfigEntry
 
@@ -57,41 +62,35 @@ def config_fixture() -> ConfigType:
     return {DOMAIN: {CONF_USERNAME: "user", CONF_PASSWORD: "pass"}}
 
 
+class _DevicesContainer:
+    def __init__(self) -> None:
+        for category in DEVICE_CATEGORIES:
+            setattr(self, category, [])
+
+        # wrap all devices in a read-only proxy array
+        self._devices = MappingProxyType(
+            {category: getattr(self, category) for category in DEVICE_CATEGORIES}
+        )
+
+    def __iter__(self) -> Iterator[_DevicesContainer]:
+        return chain.from_iterable(getattr(self, c) for c in DEVICE_CATEGORIES)
+
+    def __len__(self) -> int:
+        return sum(len(getattr(self, c)) for c in DEVICE_CATEGORIES)
+
+
 @pytest.fixture(name="manager")
-def manager_fixture() -> VeSync:
+def manager_fixture():
     """Create a mock VeSync manager fixture."""
+    devices = _DevicesContainer()
 
-    devices = set()
-    outlets = set()
-    switches = set()
-    fans = set()
-    bulbs = set()
-    humidifers = set()
-
-    # If you need to support .outlets, .switches, etc. on devices, use a MagicMock
-    devices_container = MagicMock()
-    devices_container.__iter__.side_effect = lambda: iter(devices)
-    devices_container.__contains__.side_effect = devices.__contains__
-    devices_container.__len__.side_effect = devices.__len__
-    devices_container.add.side_effect = devices.add
-    devices_container.discard.side_effect = devices.discard
-    devices_container.outlets = outlets
-    devices_container.switches = switches
-    devices_container.fans = fans
-    devices_container.bulbs = bulbs
-    devices_container.humidifers = humidifers
-
-    mock_vesync = Mock(VeSync)
+    mock_vesync = Mock(spec=VeSync)
     mock_vesync.enabled = True
     mock_vesync.login = AsyncMock(return_value=True)
     mock_vesync.update = AsyncMock()
-    mock_vesync.devices = devices_container
-    mock_vesync._dev_list = {
-        "fans": fans,
-        "outlets": outlets,
-        "switches": switches,
-        "bulbs": bulbs,
-    }
+    mock_vesync.devices = devices
+    mock_vesync._dev_list = devices._devices
+
     mock_vesync.account_id = "account_id"
     mock_vesync.time_zone = "America/New_York"
 
@@ -137,7 +136,7 @@ def outlet_fixture():
 def humidifier_fixture():
     """Create a mock VeSync Classic200S humidifier fixture."""
     return Mock(
-        VeSyncFanBase,
+        VeSyncHumidifier,
         cid="200s-humidifier",
         config={
             "auto_target_humidity": 40,
@@ -167,27 +166,34 @@ def humidifier_fixture():
 def humidifier_300s_fixture():
     """Create a mock VeSync Classic300S humidifier fixture."""
     return Mock(
-        VeSyncFanBase,
+        VeSyncHumidifier,
         cid="300s-humidifier",
         config={
             "auto_target_humidity": 40,
             "display": "true",
             "automatic_stop": "true",
         },
-        details={"humidity": 35, "mode": "manual", "night_light_brightness": 50},
+        features=[HumidifierFeatures.NIGHTLIGHT],
         device_type="Classic300S",
         device_name="Humidifier 300s",
         device_status="on",
-        mist_level=6,
         mist_modes=["auto", "manual"],
-        mode=None,
-        night_light=True,
+        mist_levels=[1, 2, 3, 4, 5, 6],
         sub_device_no=0,
+        target_minmax=(30, 80),
+        state=Mock(
+            HumidifierState,
+            connection_status="online",
+            humidity=50,
+            mist_level=6,
+            mode=None,
+            nightlight_status="dim",
+            nightlight_brightness=50,
+            water_lacks=False,
+            water_tank_lifted=False,
+        ),
         config_module="configModule",
-        connection_status="online",
         current_firm_version="1.0.0",
-        water_lacks=False,
-        water_tank_lifted=False,
     )
 
 
@@ -221,7 +227,7 @@ async def install_humidifier_device(
     """Create a mock VeSync config entry with the specified humidifier device."""
 
     # Install the defined humidifier
-    manager._dev_list["fans"].append(request.getfixturevalue(request.param))
+    manager._dev_list["humidifiers"].append(request.getfixturevalue(request.param))
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
 

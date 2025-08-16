@@ -19,6 +19,17 @@ ENTITY_FAN = "fan.SmartTowerFan"
 
 ENTITY_SWITCH_DISPLAY = "switch.humidifier_200s_display"
 
+DEVICE_CATEGORIES = [
+    "outlets",
+    "switches",
+    "fans",
+    "bulbs",
+    "humidifiers",
+    "air_purifiers",
+    "air_fryers",
+    "thermostats",
+]
+
 ALL_DEVICES = load_json_object_fixture("vesync-devices.json", DOMAIN)
 ALL_DEVICE_NAMES: list[str] = [
     dev["deviceName"] for dev in ALL_DEVICES["result"]["list"]
