@@ -65,28 +65,33 @@ async def test_entity_update(
     for entity_id in expected_entities:
         assert hass.states.get(entity_id).state != STATE_UNAVAILABLE
 
-    assert hass.states.get("sensor.air_purifier_400s_air_quality").state == "5"
+    assert hass.states.get("sensor.air_purifier_400s_pm2_5").state == "5"
+    assert hass.states.get("sensor.air_purifier_400s_air_quality").state == "excellent"
     assert hass.states.get("sensor.outlet_current_voltage").state == "120.0"
-    assert hass.states.get("sensor.outlet_energy_use_weekly").state == "0"
+    assert hass.states.get("sensor.outlet_energy_use_weekly").state == "0.0"
 
     # Update the mock responses
     mock_air_purifier_400s_update_response(aio_mock)
-    mock_outlet_energy_response(aio_mock, "Outlet", {"totalEnergy": 2.2})
+    mock_outlet_energy_response(aio_mock, "Outlet", {"result": {"totalEnergy": 2.2}})
     mock_device_response(aio_mock, "Outlet", {"voltage": 129})
 
     freezer.tick(timedelta(seconds=UPDATE_INTERVAL))
     async_fire_time_changed(hass)
     await hass.async_block_till_done(True)
 
-    assert hass.states.get("sensor.air_purifier_400s_air_quality").state == "15"
+    assert hass.states.get("sensor.air_purifier_400s_pm2_5").state == "15"
+    assert hass.states.get("sensor.air_purifier_400s_air_quality").state == "good"
     assert hass.states.get("sensor.outlet_current_voltage").state == "129.0"
 
     # Test energy update
-    # pyvesync only updates energy parameters once every 6 hours.
+    assert hass.states.get("sensor.outlet_energy_use_weekly").state == "0.0"
+
+    # energy history only updates once every 6 hours.
     freezer.tick(timedelta(hours=6))
     async_fire_time_changed(hass)
     await hass.async_block_till_done(True)
 
-    assert hass.states.get("sensor.air_purifier_400s_air_quality").state == "15"
+    assert hass.states.get("sensor.air_purifier_400s_pm2_5").state == "15"
+    assert hass.states.get("sensor.air_purifier_400s_air_quality").state == "good"
     assert hass.states.get("sensor.outlet_current_voltage").state == "129.0"
     assert hass.states.get("sensor.outlet_energy_use_weekly").state == "2.2"

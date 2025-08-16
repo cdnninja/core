@@ -65,7 +65,9 @@ DEVICE_FIXTURES: dict[str, list[tuple[str, str, str]]] = {
     ],
     "Outlet": [
         ("get", "/v1/device/outlet/detail", "outlet-detail.json"),
-        ("get", "/v1/device/outlet/energy/week", "outlet-energy-week.json"),
+        ("post", "/cloud/v1/device/getLastWeekEnergy", "outlet-energy.json"),
+        ("post", "/cloud/v1/device/getLastMonthEnergy", "outlet-energy.json"),
+        ("post", "/cloud/v1/device/getLastYearEnergy", "outlet-energy.json"),
     ],
     "Wall Switch": [
         ("post", "/cloud/v1/deviceManaged/deviceDetail", "device-detail.json")
@@ -162,7 +164,6 @@ def mock_multiple_device_responses(
             getattr(aio_mock, fixture[0])(
                 f"https://smartapi.vesync.com{fixture[1]}",
                 payload=load_json_object_fixture(fixture[2], DOMAIN),
-                repeat=True,
             )
 
 
@@ -201,7 +202,6 @@ def mock_device_response(
         getattr(aio_mock, item[0])(
             f"https://smartapi.vesync.com{item[1]}",
             payload=load_and_merge(item[2]),
-            repeat=True,
         )
 
 
@@ -227,7 +227,6 @@ def mock_outlet_energy_response(
         getattr(aio_mock, item[0])(
             f"https://smartapi.vesync.com{item[1]}",
             payload=load_and_merge(item[2]),
-            repeat=True,
         )
 
 
