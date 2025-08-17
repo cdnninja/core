@@ -12,10 +12,11 @@ import pytest
 from pyvesync import VeSync
 from pyvesync.base_devices.bulb_base import VeSyncBulb
 from pyvesync.base_devices.fan_base import VeSyncFanBase
-from pyvesync.base_devices.humidifier_base import HumidifierState, VeSyncHumidifier
+from pyvesync.base_devices.humidifier_base import HumidifierState
 from pyvesync.base_devices.outlet_base import VeSyncOutlet
 from pyvesync.base_devices.switch_base import VeSyncSwitch
 from pyvesync.const import HumidifierFeatures
+from pyvesync.devices.vesynchumidifier import VeSyncHumid200S, VeSyncHumid200300S
 
 from homeassistant.components.vesync import DOMAIN
 from homeassistant.config_entries import ConfigEntry
@@ -134,39 +135,44 @@ def outlet_fixture():
 
 @pytest.fixture(name="humidifier")
 def humidifier_fixture():
-    """Create a mock VeSync Classic200S humidifier fixture."""
+    """Create a mock VeSync Classic 200S humidifier fixture."""
     return Mock(
-        VeSyncHumidifier,
+        VeSyncHumid200S,
         cid="200s-humidifier",
         config={
             "auto_target_humidity": 40,
             "display": "true",
             "automatic_stop": "true",
         },
-        details={
-            "humidity": 35,
-            "mode": "manual",
-        },
+        features=[HumidifierFeatures.NIGHTLIGHT],
         device_type="Classic200S",
         device_name="Humidifier 200s",
         device_status="on",
-        mist_level=6,
         mist_modes=["auto", "manual"],
-        mode=None,
+        mist_levels=[1, 2, 3, 4, 5, 6],
         sub_device_no=0,
-        config_module="configModule",
+        target_minmax=(30, 80),
+        state=Mock(
+            HumidifierState,
+            connection_status="online",
+            humidity=50,
+            mist_level=6,
+            mode=None,
+            nightlight_status="dim",
+            nightlight_brightness=50,
+            water_lacks=False,
+            water_tank_lifted=False,
+        ),
         connection_status="online",
         current_firm_version="1.0.0",
-        water_lacks=False,
-        water_tank_lifted=False,
     )
 
 
 @pytest.fixture(name="humidifier_300s")
 def humidifier_300s_fixture():
-    """Create a mock VeSync Classic300S humidifier fixture."""
+    """Create a mock VeSync Classic 300S humidifier fixture."""
     return Mock(
-        VeSyncHumidifier,
+        VeSyncHumid200300S,
         cid="300s-humidifier",
         config={
             "auto_target_humidity": 40,

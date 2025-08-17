@@ -75,9 +75,7 @@ DEVICE_FIXTURES: dict[str, list[tuple[str, str, str]]] = {
     "Dimmer Switch": [
         ("post", "/cloud/v1/deviceManaged/deviceDetail", "dimmer-detail.json")
     ],
-    "SmartTowerFan": [
-        ("post", "/cloud/v2/deviceManaged/bypassV2", "SmartTowerFan-detail.json")
-    ],
+    "SmartTowerFan": [("post", "/cloud/v2/deviceManaged/bypassV2", "fan-detail.json")],
 }
 
 
@@ -119,6 +117,7 @@ def mock_devices_response(aio_mock: aioresponses, device_name: str) -> None:
         getattr(aio_mock, fixture[0])(
             f"https://smartapi.vesync.com{fixture[1]}",
             payload=load_json_object_fixture(fixture[2], DOMAIN),
+            repeat=2,
         )
 
 
@@ -163,6 +162,7 @@ def mock_multiple_device_responses(
             getattr(aio_mock, fixture[0])(
                 f"https://smartapi.vesync.com{fixture[1]}",
                 payload=load_json_object_fixture(fixture[2], DOMAIN),
+                repeat=2,
             )
 
 

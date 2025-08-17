@@ -94,7 +94,9 @@ SENSORS: tuple[VeSyncSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        value_fn=lambda device: device.state.weekly_history.totalEnergy,
+        value_fn=lambda device: getattr(
+            device.state.weekly_history, "totalEnergy", None
+        ),
         exists_fn=is_outlet,
     ),
     VeSyncSensorEntityDescription(
@@ -103,7 +105,9 @@ SENSORS: tuple[VeSyncSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        value_fn=lambda device: device.state.monthly_history.totalEnergy,
+        value_fn=lambda device: getattr(
+            device.state.monthly_history, "totalEnergy", None
+        ),
         exists_fn=is_outlet,
     ),
     VeSyncSensorEntityDescription(
@@ -112,7 +116,9 @@ SENSORS: tuple[VeSyncSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        value_fn=lambda device: device.state.yearly_history.totalEnergy,
+        value_fn=lambda device: getattr(
+            device.state.yearly_history, "totalEnergy", None
+        ),
         exists_fn=is_outlet,
     ),
     VeSyncSensorEntityDescription(

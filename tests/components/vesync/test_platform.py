@@ -39,7 +39,6 @@ async def test_entity_update(
     )
 
     mock_multiple_device_responses(aio_mock, ["Air Purifier 400s", "Outlet"])
-    mock_multiple_device_responses(aio_mock, ["Air Purifier 400s", "Outlet"])
 
     expected_entities = [
         # From "Air Purifier 400s"
