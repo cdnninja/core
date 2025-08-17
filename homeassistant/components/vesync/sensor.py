@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import timedelta
 import logging
 
 from pyvesync.base_devices.vesyncbasedevice import VeSyncBaseDevice
@@ -30,14 +29,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.typing import StateType
 
 from .common import is_humidifier, is_outlet, rgetattr
-from .const import (
-    DOMAIN,
-    UPDATE_INTERVAL_ENERGY_HISTORY,
-    VS_COORDINATOR,
-    VS_DEVICES,
-    VS_DISCOVERY,
-    VS_MANAGER,
-)
+from .const import DOMAIN, VS_COORDINATOR, VS_DEVICES, VS_DISCOVERY, VS_MANAGER
 from .coordinator import VeSyncDataCoordinator
 from .entity import VeSyncBaseEntity
 
@@ -51,8 +43,6 @@ class VeSyncSensorEntityDescription(SensorEntityDescription):
     value_fn: Callable[[VeSyncBaseDevice], StateType]
 
     exists_fn: Callable[[VeSyncBaseDevice], bool]
-    update_fn: Callable[[VeSyncBaseDevice], Awaitable[None]] | None = None
-    scan_interval: timedelta | None = None
 
 
 SENSORS: tuple[VeSyncSensorEntityDescription, ...] = (
@@ -104,9 +94,7 @@ SENSORS: tuple[VeSyncSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        scan_interval=timedelta(seconds=UPDATE_INTERVAL_ENERGY_HISTORY),
         value_fn=lambda device: device.state.weekly_history.totalEnergy,
-        update_fn=lambda device: device.get_weekly_energy(),
         exists_fn=is_outlet,
     ),
     VeSyncSensorEntityDescription(
@@ -115,9 +103,7 @@ SENSORS: tuple[VeSyncSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        scan_interval=timedelta(seconds=UPDATE_INTERVAL_ENERGY_HISTORY),
         value_fn=lambda device: device.state.monthly_history.totalEnergy,
-        update_fn=lambda device: device.get_monthly_energy(),
         exists_fn=is_outlet,
     ),
     VeSyncSensorEntityDescription(
@@ -126,9 +112,7 @@ SENSORS: tuple[VeSyncSensorEntityDescription, ...] = (
         device_class=SensorDeviceClass.ENERGY,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         state_class=SensorStateClass.TOTAL_INCREASING,
-        scan_interval=timedelta(seconds=UPDATE_INTERVAL_ENERGY_HISTORY),
         value_fn=lambda device: device.state.yearly_history.totalEnergy,
-        update_fn=lambda device: device.get_yearly_energy(),
         exists_fn=is_outlet,
     ),
     VeSyncSensorEntityDescription(
@@ -213,9 +197,3 @@ class VeSyncSensorEntity(VeSyncBaseEntity, SensorEntity):
     def native_value(self) -> StateType:
         """Return the state of the sensor."""
         return self.entity_description.value_fn(self.device)
-
-    async def async_update(self) -> None:
-        """Run the update function defined for the sensor."""
-        if self.entity_description.update_fn:
-            return await self.entity_description.update_fn(self.device)
-        return None

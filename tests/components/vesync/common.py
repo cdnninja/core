@@ -119,7 +119,6 @@ def mock_devices_response(aio_mock: aioresponses, device_name: str) -> None:
         getattr(aio_mock, fixture[0])(
             f"https://smartapi.vesync.com{fixture[1]}",
             payload=load_json_object_fixture(fixture[2], DOMAIN),
-            repeat=True,
         )
 
 
@@ -202,6 +201,7 @@ def mock_device_response(
         getattr(aio_mock, item[0])(
             f"https://smartapi.vesync.com{item[1]}",
             payload=load_and_merge(item[2]),
+            repeat=True,
         )
 
 
@@ -214,13 +214,16 @@ def mock_outlet_energy_response(
         json = load_json_object_fixture(source, DOMAIN)
 
         if override:
-            json.update(override)
+            if "result" in json:
+                json["result"].update(override)
+            else:
+                json.update(override)
 
         return json
 
     fixtures = DEVICE_FIXTURES[device_name]
 
-    # The 2nd item contain energy details
+    # The 2nd item contains weekly energy details
     if len(fixtures) > 1:
         item = fixtures[1]
 

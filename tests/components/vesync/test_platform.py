@@ -39,6 +39,7 @@ async def test_entity_update(
     )
 
     mock_multiple_device_responses(aio_mock, ["Air Purifier 400s", "Outlet"])
+    mock_multiple_device_responses(aio_mock, ["Air Purifier 400s", "Outlet"])
 
     expected_entities = [
         # From "Air Purifier 400s"
@@ -72,8 +73,8 @@ async def test_entity_update(
 
     # Update the mock responses
     mock_air_purifier_400s_update_response(aio_mock)
-    mock_outlet_energy_response(aio_mock, "Outlet", {"result": {"totalEnergy": 2.2}})
     mock_device_response(aio_mock, "Outlet", {"voltage": 129})
+    mock_outlet_energy_response(aio_mock, "Outlet", {"totalEnergy": 2.2})
 
     freezer.tick(timedelta(seconds=UPDATE_INTERVAL))
     async_fire_time_changed(hass)
@@ -82,11 +83,13 @@ async def test_entity_update(
     assert hass.states.get("sensor.air_purifier_400s_pm2_5").state == "15"
     assert hass.states.get("sensor.air_purifier_400s_air_quality").state == "good"
     assert hass.states.get("sensor.outlet_current_voltage").state == "129.0"
-
-    # Test energy update
     assert hass.states.get("sensor.outlet_energy_use_weekly").state == "0.0"
 
     # energy history only updates once every 6 hours.
+    # aio mocks are only valid once and need to be repeated here
+    mock_air_purifier_400s_update_response(aio_mock)
+    mock_outlet_energy_response(aio_mock, "Outlet", {"totalEnergy": 2.2})
+
     freezer.tick(timedelta(hours=6))
     async_fire_time_changed(hass)
     await hass.async_block_till_done(True)
