@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from itertools import chain
 from types import MappingProxyType
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 from aioresponses import aioresponses
 import pytest
@@ -88,9 +88,7 @@ def manager_fixture():
     """Create a mock VeSync manager fixture."""
     devices = _DevicesContainer()
 
-    mock_vesync = Mock(spec=VeSync)
-    mock_vesync.login = AsyncMock(return_value=True)
-    mock_vesync.enabled = mock_vesync.login
+    mock_vesync = MagicMock(spec=VeSync)
     mock_vesync.update = AsyncMock()
     mock_vesync.devices = devices
     mock_vesync._dev_list = devices._devices
