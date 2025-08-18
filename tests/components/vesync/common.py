@@ -36,10 +36,10 @@ ALL_DEVICE_NAMES: list[str] = [
 ]
 DEVICE_FIXTURES: dict[str, list[tuple[str, str, str]]] = {
     "Humidifier 200s": [
-        ("post", "/cloud/v2/deviceManaged/bypassV2", "humidifier-200s.json")
+        ("post", "/cloud/v2/deviceManaged/bypassV2", "humidifier-detail.json")
     ],
     "Humidifier 600S": [
-        ("post", "/cloud/v2/deviceManaged/bypassV2", "device-detail.json")
+        ("post", "/cloud/v2/deviceManaged/bypassV2", "humidifier-detail.json")
     ],
     "Air Purifier 131s": [
         (
@@ -61,7 +61,7 @@ DEVICE_FIXTURES: dict[str, list[tuple[str, str, str]]] = {
         ("post", "/cloud/v1/deviceManaged/deviceDetail", "device-detail.json")
     ],
     "Temperature Light": [
-        ("post", "/cloud/v1/deviceManaged/bypass", "device-detail.json")
+        ("post", "/cloud/v1/deviceManaged/bypass", "light-detail.json")
     ],
     "Outlet": [
         ("get", "/v1/device/outlet/detail", "outlet-detail.json"),

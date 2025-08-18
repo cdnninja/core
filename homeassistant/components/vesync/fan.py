@@ -178,7 +178,7 @@ class VeSyncFanHA(VeSyncBaseEntity, FanEntity):
                 raise HomeAssistantError("An error occurred while setting manual mode.")
 
         # Calculate the speed level and set it
-        if not await self.device.change_fan_speed(
+        if not await self.device.set_fan_speed(
             percentage_to_ordered_list_item(self.device.fan_levels, percentage)
         ):
             raise HomeAssistantError("An error occurred while changing fan speed.")

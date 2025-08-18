@@ -84,7 +84,7 @@ SELECT_DESCRIPTIONS: list[VeSyncSelectEntityDescription] = [
         and device.supports_nightlight,
         select_option_fn=lambda device, value: device.set_nightlight_mode(value),
         current_option_fn=lambda device: VS_TO_HA_HUMIDIFIER_NIGHT_LIGHT_LEVEL_MAP.get(
-            device.state.get("night_light"),
+            device.state.night_light,
             FAN_NIGHT_LIGHT_LEVEL_OFF,
         ),
     ),

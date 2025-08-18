@@ -1,0 +1,15 @@
+{
+  "code": 0,
+  "msg": "request success",
+  "traceId": "1234",
+  "result": {
+    "code": 0,
+    "traceId": "1234",
+    "msg": null,
+    "result": {
+      "light": {
+        "brightness": 50
+      }
+    }
+  }
+}

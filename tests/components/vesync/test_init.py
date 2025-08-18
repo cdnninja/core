@@ -61,11 +61,7 @@ async def test_async_setup_entry__loads_fans(
     hass: HomeAssistant, config_entry: ConfigEntry, manager: VeSync, fan
 ) -> None:
     """Test setup connects to vesync and loads fan."""
-    fans = [fan]
-    manager.fans = fans
-    manager._dev_list = {
-        "fans": fans,
-    }
+    manager._dev_list["fans"].append(fan)
 
     with patch.object(hass.config_entries, "async_forward_entry_setups") as setups_mock:
         assert await async_setup_entry(hass, config_entry)
@@ -85,7 +81,7 @@ async def test_async_setup_entry__loads_fans(
         ]
     assert manager.login.call_count == 1
     assert hass.data[DOMAIN][VS_MANAGER] == manager
-    assert hass.data[DOMAIN][VS_MANAGER].devices == [fan]
+    assert list(hass.data[DOMAIN][VS_MANAGER].devices) == [fan]
 
 
 async def test_async_new_device_discovery(
@@ -100,27 +96,20 @@ async def test_async_new_device_discovery(
     assert not hass.data[DOMAIN][VS_MANAGER].devices
 
     # Mock discovery of new fan which would get added to VS_DEVICES.
-    with patch(
-        "homeassistant.components.vesync.async_generate_device_list",
-        return_value=[fan],
-    ):
-        await hass.services.async_call(DOMAIN, SERVICE_UPDATE_DEVS, {}, blocking=True)
+    manager._dev_list["fans"].append(fan)
+    await hass.services.async_call(DOMAIN, SERVICE_UPDATE_DEVS, {}, blocking=True)
 
-        assert manager.login.call_count == 1
-        assert hass.data[DOMAIN][VS_MANAGER] == manager
-        assert hass.data[DOMAIN][VS_MANAGER].devices == [fan]
+    assert manager.login.call_count == 1
+    assert hass.data[DOMAIN][VS_MANAGER] == manager
+    assert list(hass.data[DOMAIN][VS_MANAGER].devices) == [fan]
 
     # Mock discovery of new humidifier which would invoke discovery in all platforms.
-    # The mocked humidifier needs to have all properties populated for correct processing.
-    with patch(
-        "homeassistant.components.vesync.async_generate_device_list",
-        return_value=[humidifier],
-    ):
-        await hass.services.async_call(DOMAIN, SERVICE_UPDATE_DEVS, {}, blocking=True)
+    manager._dev_list["humidifiers"].append(humidifier)
+    await hass.services.async_call(DOMAIN, SERVICE_UPDATE_DEVS, {}, blocking=True)
 
-        assert manager.login.call_count == 1
-        assert hass.data[DOMAIN][VS_MANAGER] == manager
-        assert hass.data[DOMAIN][VS_MANAGER].devices == [fan, humidifier]
+    assert manager.login.call_count == 1
+    assert hass.data[DOMAIN][VS_MANAGER] == manager
+    assert list(hass.data[DOMAIN][VS_MANAGER].devices) == [fan, humidifier]
 
 
 async def test_migrate_config_entry(

@@ -79,6 +79,9 @@ class _DevicesContainer:
     def __len__(self) -> int:
         return sum(len(getattr(self, c)) for c in DEVICE_CATEGORIES)
 
+    def __bool__(self) -> bool:
+        return any(getattr(self, c) for c in DEVICE_CATEGORIES)
+
 
 @pytest.fixture(name="manager")
 def manager_fixture():
@@ -102,35 +105,50 @@ def manager_fixture():
 @pytest.fixture(name="fan")
 def fan_fixture():
     """Create a mock VeSync fan fixture."""
-    return Mock(VeSyncFanBase)
+    return Mock(
+        VeSyncFanBase,
+        cid="test",
+        deviceName="Test Fan",
+        modes=[],
+    )
 
 
 @pytest.fixture(name="bulb")
 def bulb_fixture():
     """Create a mock VeSync bulb fixture."""
-    return Mock(VeSyncBulb)
+    return Mock(
+        VeSyncBulb,
+        cid="test",
+        deviceName="Test Bulb",
+    )
 
 
 @pytest.fixture(name="switch")
 def switch_fixture():
     """Create a mock VeSync switch fixture."""
-    mock_fixture = Mock(VeSyncSwitch)
-    mock_fixture.is_dimmable = Mock(return_value=False)
-    return mock_fixture
+    return Mock(
+        VeSyncSwitch,
+        is_dimmable=Mock(return_value=False),
+    )
 
 
 @pytest.fixture(name="dimmable_switch")
 def dimmable_switch_fixture():
     """Create a mock VeSync switch fixture."""
-    mock_fixture = Mock(VeSyncSwitch)
-    mock_fixture.is_dimmable = Mock(return_value=True)
-    return mock_fixture
+    return Mock(
+        VeSyncSwitch,
+        is_dimmable=Mock(return_value=True),
+    )
 
 
 @pytest.fixture(name="outlet")
 def outlet_fixture():
     """Create a mock VeSync outlet fixture."""
-    return Mock(VeSyncOutlet)
+    return Mock(
+        VeSyncOutlet,
+        cid="test",
+        deviceName="Test Outlet",
+    )
 
 
 @pytest.fixture(name="humidifier")
