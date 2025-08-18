@@ -1,6 +1,5 @@
 """Common methods used across tests for VeSync."""
 
-import json
 from typing import Any
 
 from aioresponses import aioresponses
@@ -8,7 +7,7 @@ from aioresponses import aioresponses
 from homeassistant.components.vesync.const import DOMAIN
 from homeassistant.util.json import JsonObjectType
 
-from tests.common import load_fixture, load_json_object_fixture
+from tests.common import load_json_object_fixture
 
 ENTITY_HUMIDIFIER = "humidifier.humidifier_200s"
 ENTITY_HUMIDIFIER_MIST_LEVEL = "number.humidifier_200s_mist_level"
@@ -231,68 +230,3 @@ def mock_outlet_energy_response(
             f"https://smartapi.vesync.com{item[1]}",
             payload=load_and_merge(item[2]),
         )
-
-
-def call_api_side_effect__no_devices(*args, **kwargs):
-    """Build a side_effects method for the Helpers.call_api method."""
-    if args[0] == "/user/api/accountManage/v3/appLoginV3" and args[1] == "post":
-        return json.loads(load_fixture("vesync_api_call__login.json", "vesync")), 200
-    if args[0] == "/cloud/v1/deviceManaged/devices" and args[1] == "post":
-        return (
-            json.loads(
-                load_fixture("vesync_api_call__devices__no_devices.json", "vesync")
-            ),
-            200,
-        )
-    raise ValueError(f"Unhandled API call args={args}, kwargs={kwargs}")
-
-
-def call_api_side_effect__single_humidifier(*args, **kwargs):
-    """Build a side_effects method for the Helpers.call_api method."""
-    if args[0] == "/user/api/accountManage/v3/appLoginV3" and args[1] == "post":
-        return json.loads(load_fixture("vesync_api_call__login.json", "vesync")), 200
-    if args[0] == "/cloud/v1/deviceManaged/devices" and args[1] == "post":
-        return (
-            json.loads(
-                load_fixture(
-                    "vesync_api_call__devices__single_humidifier.json", "vesync"
-                )
-            ),
-            200,
-        )
-    if args[0] == "/cloud/v2/deviceManaged/bypassV2" and kwargs["method"] == "post":
-        return (
-            json.loads(
-                load_fixture(
-                    "vesync_api_call__device_details__single_humidifier.json", "vesync"
-                )
-            ),
-            200,
-        )
-    raise ValueError(f"Unhandled API call args={args}, kwargs={kwargs}")
-
-
-def call_api_side_effect__single_fan(*args, **kwargs):
-    """Build a side_effects method for the Helpers.call_api method."""
-    if args[0] == "/user/api/accountManage/v3/appLoginV3" and args[1] == "post":
-        return json.loads(load_fixture("vesync_api_call__login.json", "vesync")), 200
-    if args[0] == "/cloud/v1/deviceManaged/devices" and args[1] == "post":
-        return (
-            json.loads(
-                load_fixture("vesync_api_call__devices__single_fan.json", "vesync")
-            ),
-            200,
-        )
-    if (
-        args[0] == "/131airPurifier/v1/device/deviceDetail"
-        and kwargs["method"] == "post"
-    ):
-        return (
-            json.loads(
-                load_fixture(
-                    "vesync_api_call__device_details__single_fan.json", "vesync"
-                )
-            ),
-            200,
-        )
-    raise ValueError(f"Unhandled API call args={args}, kwargs={kwargs}")

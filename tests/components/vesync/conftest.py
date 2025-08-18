@@ -89,8 +89,8 @@ def manager_fixture():
     devices = _DevicesContainer()
 
     mock_vesync = Mock(spec=VeSync)
-    mock_vesync.enabled = True
     mock_vesync.login = AsyncMock(return_value=True)
+    mock_vesync.enabled = mock_vesync.login
     mock_vesync.update = AsyncMock()
     mock_vesync.devices = devices
     mock_vesync._dev_list = devices._devices
@@ -107,9 +107,13 @@ def fan_fixture():
     """Create a mock VeSync fan fixture."""
     return Mock(
         VeSyncFanBase,
-        cid="test",
-        deviceName="Test Fan",
+        cid="fan",
+        device_type="fan",
+        device_name="Test Fan",
+        device_status="on",
         modes=[],
+        connection_status="online",
+        current_firm_version="1.0.0",
     )
 
 
@@ -118,8 +122,8 @@ def bulb_fixture():
     """Create a mock VeSync bulb fixture."""
     return Mock(
         VeSyncBulb,
-        cid="test",
-        deviceName="Test Bulb",
+        cid="bulb",
+        device_name="Test Bulb",
     )
 
 
@@ -146,8 +150,8 @@ def outlet_fixture():
     """Create a mock VeSync outlet fixture."""
     return Mock(
         VeSyncOutlet,
-        cid="test",
-        deviceName="Test Outlet",
+        cid="outlet",
+        device_name="Test Outlet",
     )
 
 
