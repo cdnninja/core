@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .common import is_humidifier
+from .common import is_fan, is_humidifier
 from .const import (
     DOMAIN,
     FAN_NIGHT_LIGHT_LEVEL_DIM,
@@ -80,7 +80,8 @@ SELECT_DESCRIPTIONS: list[VeSyncSelectEntityDescription] = [
             FAN_NIGHT_LIGHT_LEVEL_ON,
         ],
         icon="mdi:brightness-6",
-        exists_fn=lambda device: hasattr(device, "supports_nightlight")
+        exists_fn=lambda device: is_fan(device)
+        and hasattr(device, "supports_nightlight")
         and device.supports_nightlight,
         select_option_fn=lambda device, value: device.set_nightlight_mode(value),
         current_option_fn=lambda device: VS_TO_HA_HUMIDIFIER_NIGHT_LIGHT_LEVEL_MAP.get(
