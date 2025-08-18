@@ -68,10 +68,13 @@ async def test_fan_state(
 async def test_turn_on_off_success(
     hass: HomeAssistant,
     fan_config_entry: MockConfigEntry,
+    aio_mock: aioresponses,
     action: str,
     command: str,
 ) -> None:
     """Test turn_on and turn_off method."""
+
+    mock_devices_response(aio_mock, "SmartTowerFan")
 
     with (
         patch(command, new_callable=AsyncMock, return_value=True) as method_mock,
