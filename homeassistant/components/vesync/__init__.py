@@ -3,7 +3,7 @@
 import logging
 
 from pyvesync import VeSync
-from pyvesync.utils.errors import VesyncLoginError
+from pyvesync.utils.errors import VeSyncError
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
@@ -41,11 +41,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         time_zone=time_zone,
     )
     try:
-        if not await manager.login():
-            _LOGGER.error("Username or password incorrect")
-            raise ConfigEntryAuthFailed
-    except VesyncLoginError as err:
-        _LOGGER.error("Username or password invalid")
+        await manager.login()
+    except VeSyncError as err:
         raise ConfigEntryAuthFailed from err
 
     hass.data[DOMAIN] = {}
