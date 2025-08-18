@@ -63,21 +63,24 @@ async def test_switch_state(
     [
         (
             SERVICE_TURN_ON,
-            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.toggle_display",
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200S.toggle_display",
         ),
         (
             SERVICE_TURN_OFF,
-            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.toggle_display",
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200S.toggle_display",
         ),
     ],
 )
 async def test_turn_on_off_display_success(
     hass: HomeAssistant,
     humidifier_config_entry: MockConfigEntry,
+    aio_mock: aioresponses,
     action: str,
     command: str,
 ) -> None:
     """Test switch turn on and off command with success response."""
+
+    mock_devices_response(aio_mock, "Humidifier 200s")
 
     with (
         patch(
@@ -105,21 +108,24 @@ async def test_turn_on_off_display_success(
     [
         (
             SERVICE_TURN_ON,
-            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.toggle_display",
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200S.toggle_display",
         ),
         (
             SERVICE_TURN_OFF,
-            "pyvesync.devices.vesynchumidifier.VeSyncHumid200300S.toggle_display",
+            "pyvesync.devices.vesynchumidifier.VeSyncHumid200S.toggle_display",
         ),
     ],
 )
 async def test_turn_on_off_display_raises_error(
     hass: HomeAssistant,
     humidifier_config_entry: MockConfigEntry,
+    aio_mock: aioresponses,
     action: str,
     command: str,
 ) -> None:
     """Test switch turn on and off command raises HomeAssistantError."""
+
+    mock_devices_response(aio_mock, "Humidifier 200s")
 
     with (
         patch(
