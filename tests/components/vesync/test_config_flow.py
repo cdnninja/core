@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from pyvesync.utils.errors import VesyncLoginError
+from pyvesync.utils.errors import VeSyncLoginError
 
 from homeassistant.components.vesync import DOMAIN, config_flow
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
@@ -32,7 +32,7 @@ async def test_invalid_login_error(hass: HomeAssistant) -> None:
     flow.hass = hass
     with patch(
         "pyvesync.vesync.VeSync.login",
-        side_effect=VesyncLoginError("Mock login failed"),
+        side_effect=VeSyncLoginError("Mock login failed"),
     ):
         result = await flow.async_step_user(user_input=test_dict)
 
@@ -96,7 +96,7 @@ async def test_reauth_flow_invalid_auth(hass: HomeAssistant) -> None:
 
     with patch(
         "pyvesync.vesync.VeSync.login",
-        side_effect=VesyncLoginError("Mock login failed"),
+        side_effect=VeSyncLoginError("Mock login failed"),
     ):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"],
