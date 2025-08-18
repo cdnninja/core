@@ -9,7 +9,7 @@
     "filterLife": {
       "change": false,
       "useHour": 0,
-      "percent": 100
+      "percent": 25
     },
     "activeTime": 0,
     "timer": null,
