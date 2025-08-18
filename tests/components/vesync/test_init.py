@@ -3,6 +3,7 @@
 from unittest.mock import AsyncMock, patch
 
 from pyvesync import VeSync
+from pyvesync.utils.errors import VeSyncLoginError
 
 from homeassistant.components.vesync import SERVICE_UPDATE_DEVS, async_setup_entry
 from homeassistant.components.vesync.const import DOMAIN, VS_MANAGER
@@ -20,7 +21,7 @@ async def test_async_setup_entry__not_login(
     manager: VeSync,
 ) -> None:
     """Test setup does not create config entry when not logged in."""
-    manager.login = AsyncMock(return_value=False)
+    manager.login = AsyncMock(side_effect=VeSyncLoginError("Mock login failed"))
 
     assert not await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
