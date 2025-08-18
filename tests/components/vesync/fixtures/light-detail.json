@@ -8,7 +8,9 @@
     "msg": null,
     "result": {
       "light": {
-        "brightness": 50
+        "action": "on",
+        "brightness": 50,
+        "colorTempe": 50
       }
     }
   }
