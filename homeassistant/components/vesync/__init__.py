@@ -42,6 +42,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         password=password,
         time_zone=time_zone,
         session=async_get_clientsession(hass),
+        country_code=hass.config.country or "US",
     )
     try:
         await manager.login()

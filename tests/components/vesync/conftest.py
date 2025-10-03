@@ -29,6 +29,8 @@ from .common import DEVICE_CATEGORIES, mock_multiple_device_responses
 from tests.common import MockConfigEntry
 from tests.test_util.aiohttp import AiohttpClientMocker
 
+pytest.fixture(autouse=True)
+
 
 @pytest.fixture(autouse=True)
 def patch_vesync_firmware():
