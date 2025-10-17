@@ -83,7 +83,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
+        if hass.services.has_service(DOMAIN, SERVICE_UPDATE_DEVS):
+            _LOGGER.debug("Removing VeSync service: %s", SERVICE_UPDATE_DEVS)
+            hass.services.async_remove(DOMAIN, SERVICE_UPDATE_DEVS)
+            hass.services.async_remove(DOMAIN, "vesync_new_devices")
         hass.data.pop(DOMAIN)
+        _LOGGER.debug("VeSync data removed: %s", hass.data[DOMAIN])
 
     return unload_ok
 
