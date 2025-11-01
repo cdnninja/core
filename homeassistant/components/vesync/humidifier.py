@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-from pyvesync.base_devices.vesyncbasedevice import VeSyncBaseDevice
+from pyvesync.base_devices.humidifier_base import VeSyncHumidifier
 
 from homeassistant.components.humidifier import (
     MODE_AUTO,
@@ -70,7 +70,7 @@ async def async_setup_entry(
 
 @callback
 def _setup_entities(
-    devices: list[VeSyncBaseDevice],
+    devices: list[VeSyncHumidifier],
     async_add_entities: AddConfigEntryEntitiesCallback,
     coordinator: VeSyncDataCoordinator,
 ):
@@ -95,7 +95,7 @@ class VeSyncHumidifierHA(VeSyncBaseEntity, HumidifierEntity):
 
     def __init__(
         self,
-        device: VeSyncBaseDevice,
+        device: VeSyncHumidifier,
         coordinator: VeSyncDataCoordinator,
     ) -> None:
         """Initialize the VeSyncHumidifierHA device."""
