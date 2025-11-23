@@ -13,6 +13,7 @@ from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 
 from .const import DOMAIN
 
@@ -121,3 +122,15 @@ class VeSyncFlowHandler(ConfigFlow, domain=DOMAIN):
             description_placeholders={"name": "VeSync"},
             errors={"base": "invalid_auth"},
         )
+
+    async def async_step_dhcp(
+        self, discovery_info: DhcpServiceInfo
+    ) -> ConfigFlowResult:
+        """Handle DHCP discovery for cloud integration.
+
+        No local data is passed, just redirect to user step.
+        """
+        await self._async_handle_discovery_without_unique_id()
+        if self._async_current_entries():
+            return self.async_abort(reason="single_instance_allowed")
+        return await self.async_step_user()
