@@ -4,10 +4,12 @@ from unittest.mock import patch
 
 from pyvesync.utils.errors import VeSyncLoginError
 
+from homeassistant import config_entries
 from homeassistant.components.vesync import DOMAIN, config_flow
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.helpers.service_info.dhcp import DhcpServiceInfo
 
 from tests.common import MockConfigEntry
 
@@ -112,3 +114,22 @@ async def test_reauth_flow_invalid_auth(hass: HomeAssistant) -> None:
 
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reauth_successful"
+
+
+async def test_dhcp_discovery(hass: HomeAssistant) -> None:
+    """Test DHCP discovery flow."""
+
+    service_info = DhcpServiceInfo(
+        hostname="levoit-purifier",
+        ip="1.2.3.4",
+        macaddress="aabbccddeeff",
+    )
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_DHCP},
+        data=service_info,
+    )
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "user"
+    assert result["errors"] == {}
