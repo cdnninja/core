@@ -15,11 +15,7 @@ from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
 from .const import DOMAIN, SERVICE_UPDATE_DEVS
-from .coordinator import (
-    VeSyncDataCoordinator,
-    VeSyncRuntimeData,
-    VeSyncConfigEntry,
-)
+from .coordinator import VeSyncConfigEntry, VeSyncDataCoordinator, VeSyncRuntimeData
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,
