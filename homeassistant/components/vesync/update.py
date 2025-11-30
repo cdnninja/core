@@ -30,9 +30,7 @@ async def async_setup_entry(
         async_dispatcher_connect(hass, VS_DISCOVERY.format(VS_DEVICES), discover)
     )
 
-    _setup_entities(
-        hass.data[DOMAIN][VS_MANAGER].devices, async_add_entities, coordinator
-    )
+    _setup_entities(config_entry.runtime_data.devices, async_add_entities, coordinator)
 
 
 @callback

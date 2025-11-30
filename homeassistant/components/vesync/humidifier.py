@@ -62,7 +62,7 @@ async def async_setup_entry(
     )
 
     _setup_entities(
-        hass.data[DOMAIN][VS_MANAGER].devices.humidifiers,
+        config_entry.runtime_data.devices.humidifiers,
         async_add_entities,
         coordinator,
     )

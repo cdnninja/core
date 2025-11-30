@@ -31,18 +31,18 @@ PLATFORMS = [
 
 _LOGGER = logging.getLogger(__name__)
 
+type VeSyncIntegrationConfigEntry = ConfigEntry[VeSync]
 
-async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+
+async def async_setup_entry(
+    hass: HomeAssistant, config_entry: VeSyncIntegrationConfigEntry
+) -> bool:
     """Set up Vesync as config entry."""
-    username = config_entry.data[CONF_USERNAME]
-    password = config_entry.data[CONF_PASSWORD]
-
-    time_zone = str(hass.config.time_zone)
 
     manager = VeSync(
-        username=username,
-        password=password,
-        time_zone=time_zone,
+        username=config_entry.data[CONF_USERNAME],
+        password=config_entry.data[CONF_PASSWORD],
+        time_zone=str(hass.config.time_zone),
         session=async_get_clientsession(hass),
     )
     try:
@@ -51,9 +51,9 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         raise ConfigEntryAuthFailed from err
 
     hass.data[DOMAIN] = {}
-    hass.data[DOMAIN][VS_MANAGER] = manager
+    config_entry.runtime_data = manager
 
-    coordinator = VeSyncDataCoordinator(hass, config_entry, manager)
+    coordinator = VeSyncDataCoordinator(hass, config_entry)
 
     # Store coordinator at domain level since only single integration instance is permitted.
     hass.data[DOMAIN][VS_COORDINATOR] = coordinator
@@ -64,7 +64,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
 
     async def async_new_device_discovery(service: ServiceCall) -> None:
         """Discover and add new devices."""
-        manager = hass.data[DOMAIN][VS_MANAGER]
+        manager = config_entry.runtime_data
         known_devices = list(manager.devices)
         await manager.get_devices()
         new_devices = [
@@ -128,7 +128,7 @@ async def async_remove_config_entry_device(
     hass: HomeAssistant, config_entry: ConfigEntry, device_entry: DeviceEntry
 ) -> bool:
     """Remove a config entry from a device."""
-    manager = hass.data[DOMAIN][VS_MANAGER]
+    manager = config_entry.runtime_data
     await manager.get_devices()
     for dev in manager.devices:
         if isinstance(dev.sub_device_no, int):

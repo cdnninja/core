@@ -59,8 +59,8 @@ async def test_async_setup_entry__no_devices(
         ]
 
     assert manager.login.call_count == 1
-    assert hass.data[DOMAIN][VS_MANAGER] == manager
-    assert not hass.data[DOMAIN][VS_MANAGER].devices
+    assert config_entry.runtime_data == manager
+    assert not config_entry.runtime_data.devices
 
 
 async def test_async_setup_entry__loads_fans(
@@ -87,8 +87,8 @@ async def test_async_setup_entry__loads_fans(
             Platform.UPDATE,
         ]
     assert manager.login.call_count == 1
-    assert hass.data[DOMAIN][VS_MANAGER] == manager
-    assert list(hass.data[DOMAIN][VS_MANAGER].devices) == [fan]
+    assert config_entry.runtime_data == manager
+    assert list(config_entry.runtime_data.devices) == [fan]
 
 
 async def test_async_new_device_discovery(
@@ -100,23 +100,23 @@ async def test_async_new_device_discovery(
     # Assert platforms loaded
     await hass.async_block_till_done()
     assert config_entry.state is ConfigEntryState.LOADED
-    assert not hass.data[DOMAIN][VS_MANAGER].devices
+    assert not config_entry.runtime_data.devices
 
     # Mock discovery of new fan which would get added to VS_DEVICES.
     manager._dev_list["fans"].append(fan)
     await hass.services.async_call(DOMAIN, SERVICE_UPDATE_DEVS, {}, blocking=True)
 
     assert manager.get_devices.call_count == 1
-    assert hass.data[DOMAIN][VS_MANAGER] == manager
-    assert list(hass.data[DOMAIN][VS_MANAGER].devices) == [fan]
+    assert config_entry.runtime_data == manager
+    assert list(config_entry.runtime_data.devices) == [fan]
 
     # Mock discovery of new humidifier which would invoke discovery in all platforms.
     manager._dev_list["humidifiers"].append(humidifier)
     await hass.services.async_call(DOMAIN, SERVICE_UPDATE_DEVS, {}, blocking=True)
 
     assert manager.get_devices.call_count == 2
-    assert hass.data[DOMAIN][VS_MANAGER] == manager
-    assert list(hass.data[DOMAIN][VS_MANAGER].devices) == [fan, humidifier]
+    assert config_entry.runtime_data == manager
+    assert list(config_entry.runtime_data.devices) == [fan, humidifier]
 
 
 async def test_migrate_config_entry(
