@@ -32,7 +32,6 @@ from .const import (
     VS_FAN_MODE_PRESET_LIST_HA,
     VS_FAN_MODE_SLEEP,
     VS_FAN_MODE_TURBO,
-    VS_MANAGER,
 )
 from .coordinator import VeSyncDataCoordinator
 from .entity import VeSyncBaseEntity

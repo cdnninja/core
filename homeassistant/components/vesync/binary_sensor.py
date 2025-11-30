@@ -19,7 +19,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .common import rgetattr
-from .const import DOMAIN, VS_COORDINATOR, VS_DEVICES, VS_DISCOVERY, VS_MANAGER
+from .const import DOMAIN, VS_COORDINATOR, VS_DEVICES, VS_DISCOVERY
 from .coordinator import VeSyncDataCoordinator
 from .entity import VeSyncBaseEntity
 
@@ -66,7 +66,7 @@ async def async_setup_entry(
     @callback
     def discover(devices):
         """Add new devices to platform."""
-        _setup_entities(devices, async_add_entities)
+        _setup_entities(devices, async_add_entities, coordinator)
 
     config_entry.async_on_unload(
         async_dispatcher_connect(hass, VS_DISCOVERY.format(VS_DEVICES), discover)

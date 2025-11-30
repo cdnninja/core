@@ -27,7 +27,6 @@ from .const import (
     VS_HUMIDIFIER_MODE_HUMIDITY,
     VS_HUMIDIFIER_MODE_MANUAL,
     VS_HUMIDIFIER_MODE_SLEEP,
-    VS_MANAGER,
 )
 from .coordinator import VeSyncDataCoordinator
 from .entity import VeSyncBaseEntity

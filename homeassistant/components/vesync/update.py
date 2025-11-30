@@ -8,14 +8,14 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import DOMAIN, VS_COORDINATOR, VS_DEVICES, VS_DISCOVERY, VS_MANAGER
-from .coordinator import VeSyncDataCoordinator
+from .const import DOMAIN, VS_COORDINATOR, VS_DEVICES, VS_DISCOVERY
+from .coordinator import VeSyncDataCoordinator, VeSyncRuntimeData
 from .entity import VeSyncBaseEntity
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    config_entry: ConfigEntry,
+    config_entry: VeSyncRuntimeData,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up update entity."""
@@ -30,7 +30,9 @@ async def async_setup_entry(
         async_dispatcher_connect(hass, VS_DISCOVERY.format(VS_DEVICES), discover)
     )
 
-    _setup_entities(config_entry.runtime_data.devices, async_add_entities, coordinator)
+    _setup_entities(
+        config_entry.runtime_data.manager.devices, async_add_entities, coordinator
+    )
 
 
 @callback

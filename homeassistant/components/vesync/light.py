@@ -19,7 +19,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import color as color_util
 
-from .const import DOMAIN, VS_COORDINATOR, VS_DEVICES, VS_DISCOVERY, VS_MANAGER
+from .const import DOMAIN, VS_COORDINATOR, VS_DEVICES, VS_DISCOVERY
 from .coordinator import VeSyncDataCoordinator
 from .entity import VeSyncBaseEntity
 

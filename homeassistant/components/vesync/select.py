@@ -28,7 +28,6 @@ from .const import (
     VS_COORDINATOR,
     VS_DEVICES,
     VS_DISCOVERY,
-    VS_MANAGER,
 )
 from .coordinator import VeSyncDataCoordinator
 from .entity import VeSyncBaseEntity

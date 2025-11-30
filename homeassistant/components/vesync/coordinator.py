@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 import logging
 
@@ -14,6 +15,17 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from .const import UPDATE_INTERVAL, UPDATE_INTERVAL_ENERGY
 
 _LOGGER = logging.getLogger(__name__)
+
+
+@dataclass
+class VeSyncRuntimeData:
+    """Runtime data for the VeSync integration."""
+
+    manager: VeSync
+    coordinator: VeSyncDataCoordinator
+
+
+type VeSyncConfigEntry = ConfigEntry[VeSyncRuntimeData]
 
 
 class VeSyncDataCoordinator(DataUpdateCoordinator[None]):
