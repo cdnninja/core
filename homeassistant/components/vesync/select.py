@@ -3,6 +3,7 @@
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 import logging
+from typing import Any
 
 from pyvesync.base_devices import VeSyncBaseDevice
 from pyvesync.device_container import DeviceContainer
@@ -45,21 +46,23 @@ HA_TO_VS_HUMIDIFIER_NIGHT_LIGHT_LEVEL_MAP = {
 PARALLEL_UPDATES = 1
 
 
-def _set_humidifier_nightlight(device: VeSyncBaseDevice, *args) -> Awaitable[bool]:
+def _set_humidifier_nightlight(device: VeSyncBaseDevice, *args: Any) -> Awaitable[bool]:
     """Toggle humidifier nightlight on."""
     if is_humidifier(device):
         return device.set_nightlight_brightness(*args)
     raise HomeAssistantError("Device does not support toggling nightlight.")
 
 
-def _toggle_purifier_nightlight(device: VeSyncBaseDevice, *args) -> Awaitable[bool]:
+def _toggle_purifier_nightlight(
+    device: VeSyncBaseDevice, *args: Any
+) -> Awaitable[bool]:
     """Toggle air purifier nightlight on."""
     if is_purifier(device):
         return device.set_nightlight_mode(*args)
     raise HomeAssistantError("Device does not support toggling nightlight.")
 
 
-def _toggle_outlet_nightlight(device: VeSyncBaseDevice, *args) -> Awaitable[bool]:
+def _toggle_outlet_nightlight(device: VeSyncBaseDevice, *args: Any) -> Awaitable[bool]:
     """Toggle outlet nightlight on."""
     if is_outlet(device) and device.supports_nightlight:
         return device.set_nightlight_state(*args)
