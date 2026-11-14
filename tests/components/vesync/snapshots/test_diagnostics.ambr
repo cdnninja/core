@@ -501,7 +501,7 @@
           'disabled': False,
           'disabled_by': None,
           'domain': 'update',
-          'entity_category': 'diagnostic',
+          'entity_category': 'config',
           'entity_id': 'update.test_fan_firmware',
           'icon': None,
           'name': None,
