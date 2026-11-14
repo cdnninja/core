@@ -6,7 +6,6 @@ from pyvesync.base_devices.vesyncbasedevice import VeSyncBaseDevice
 from pyvesync.device_container import DeviceContainer
 
 from homeassistant.components.update import UpdateDeviceClass, UpdateEntity
-from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -61,7 +60,6 @@ class VeSyncDeviceUpdate(VeSyncBaseEntity, UpdateEntity):
     """Representation of a VeSync device update entity."""
 
     _attr_device_class = UpdateDeviceClass.FIRMWARE
-    _attr_entity_category = EntityCategory.CONFIG
 
     @property
     @override
