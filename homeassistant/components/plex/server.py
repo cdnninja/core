@@ -292,7 +292,7 @@ class PlexServer:
 
         def update_with_new_media():
             """Update an existing session with new media details."""
-            media = self.fetch_item(rating_key)
+            media = self.fetch_item_with_markers(rating_key)
             active_session.update_media(media)
 
         if active_session.media_content_id != rating_key and state in (
@@ -628,6 +628,12 @@ class PlexServer:
     def fetch_item(self, item):
         """Fetch item from Plex server."""
         return self._plex_server.fetchItem(item)
+
+    def fetch_item_with_markers(self, rating_key):
+        """Fetch item from Plex server, including intro and credits markers."""
+        return self._plex_server.fetchItem(
+            f"/library/metadata/{rating_key}?includeMarkers=1"
+        )
 
     def lookup_media(self, media_type, **kwargs):
         """Lookup a piece of media."""

@@ -541,6 +541,11 @@ class PlexMediaPlayer(MediaPlayerEntity):
             if value := getattr(self, attr, None):
                 attributes[attr] = value
 
+        # Markers can start at 0 seconds
+        for attr in ("media_credits_start", "media_intro_end", "media_intro_start"):
+            if (value := getattr(self.session, attr, None)) is not None:
+                attributes[attr] = value
+
         return attributes
 
     @property

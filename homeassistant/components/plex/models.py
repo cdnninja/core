@@ -3,6 +3,7 @@
 import logging
 from typing import override
 
+from plexapi.exceptions import BadRequest, NotFound
 import plexapi.playqueue
 
 from homeassistant.components.media_player import MediaType
@@ -45,6 +46,10 @@ class PlexSession:
         self.media_album_artist = None
         self.media_artist = None
         self.media_track = None
+        # Movies and TV shows
+        self.media_credits_start = None
+        self.media_intro_end = None
+        self.media_intro_start = None
 
         # Only available on sessions
         self.player = next(iter(session.players), None)
@@ -60,6 +65,14 @@ class PlexSession:
         self.sensor_user = " - ".join(filter(None, sensor_user_list))
 
         self.update_media(session)
+        # Sessions do not include markers, so fetch them from the library item
+        if session.type in ("episode", "movie") and (session.librarySectionID or 0) > 0:
+            try:
+                media = plex_server.fetch_item_with_markers(session.ratingKey)
+            except BadRequest, NotFound:
+                _LOGGER.debug("Unable to fetch markers for '%s'", session.title)
+            else:
+                self.update_markers(media)
 
     @override
     def __repr__(self):
@@ -124,6 +137,20 @@ class PlexSession:
             self.sensor_title = media.title
         else:
             self.sensor_title = "Unknown"
+
+        self.update_markers(media)
+
+    def update_markers(self, media):
+        """Update intro and credits markers from a media object."""
+        markers = sorted(getattr(media, "markers", []), key=lambda m: m.start)
+        intro = next((m for m in markers if m.type == "intro"), None)
+        credits_marker = next((m for m in markers if m.type == "credits"), None)
+
+        self.media_intro_start = int(intro.start / 1000) if intro else None
+        self.media_intro_end = int(intro.end / 1000) if intro else None
+        self.media_credits_start = (
+            int(credits_marker.start / 1000) if credits_marker else None
+        )
 
     @property
     def media_position(self):
