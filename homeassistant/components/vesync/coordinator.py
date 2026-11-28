@@ -13,7 +13,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN, UPDATE_INTERVAL, UPDATE_INTERVAL_ENERGY
+from .const import (
+    DOMAIN,
+    UPDATE_INTERVAL,
+    UPDATE_INTERVAL_ENERGY,
+    UPDATE_INTERVAL_FIRMWARE,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +30,7 @@ class VeSyncDataCoordinator(DataUpdateCoordinator[None]):
 
     config_entry: VesyncConfigEntry
     update_time: float | None = None
+    firmware_update_time: float | None = None
 
     def __init__(
         self, hass: HomeAssistant, config_entry: VesyncConfigEntry, manager: VeSync
@@ -47,6 +53,13 @@ class VeSyncDataCoordinator(DataUpdateCoordinator[None]):
 
         return time.time() - self.update_time >= UPDATE_INTERVAL_ENERGY
 
+    def should_check_firmware(self) -> bool:
+        """Test if the firmware check interval has been exceeded."""
+        if self.firmware_update_time is None:
+            return True
+
+        return time.time() - self.firmware_update_time >= UPDATE_INTERVAL_FIRMWARE
+
     @override
     async def _async_update_data(self) -> None:
         """Fetch data from API endpoint."""
@@ -57,6 +70,10 @@ class VeSyncDataCoordinator(DataUpdateCoordinator[None]):
                 self.update_time = time.time()
                 for outlet in self.manager.devices.outlets:
                     await outlet.update_energy()
+
+            if self.should_check_firmware():
+                self.firmware_update_time = time.time()
+                await self.manager.check_firmware()
         except VeSyncLoginError as err:
             raise ConfigEntryAuthFailed(
                 translation_domain=DOMAIN, translation_key="invalid_auth"

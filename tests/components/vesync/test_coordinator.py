@@ -12,6 +12,7 @@ from pyvesync.utils.errors import VeSyncError, VeSyncLoginError
 from homeassistant.components.vesync.const import (
     UPDATE_INTERVAL,
     UPDATE_INTERVAL_ENERGY,
+    UPDATE_INTERVAL_FIRMWARE,
 )
 from homeassistant.components.vesync.coordinator import VeSyncDataCoordinator
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntry
@@ -39,6 +40,30 @@ async def test_should_update_energy(
 
     freezer.tick(timedelta(seconds=1))
     assert coordinator.should_update_energy()
+
+
+async def test_firmware_checked_once_per_interval(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    manager: VeSync,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test firmware is checked at setup and then once per interval."""
+    manager.check_firmware = AsyncMock()
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    config_entry.runtime_data.async_add_listener(lambda: None)
+    assert manager.check_firmware.call_count == 1
+
+    freezer.tick(timedelta(seconds=UPDATE_INTERVAL))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    assert manager.check_firmware.call_count == 1
+
+    freezer.tick(timedelta(seconds=UPDATE_INTERVAL_FIRMWARE))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    assert manager.check_firmware.call_count == 2
 
 
 async def test_update_failed_on_vesync_error(

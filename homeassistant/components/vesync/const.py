@@ -5,6 +5,7 @@ VS_DISCOVERY = "vesync_discovery_{}"
 
 UPDATE_INTERVAL = 60
 UPDATE_INTERVAL_ENERGY = 60 * 60 * 6
+UPDATE_INTERVAL_FIRMWARE = 60 * 60 * 24
 """
 Update interval for DataCoordinator.
 
