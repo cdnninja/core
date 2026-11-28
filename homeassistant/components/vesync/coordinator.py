@@ -70,8 +70,8 @@ class VeSyncDataCoordinator(DataUpdateCoordinator[None]):
                     await outlet.update_energy()
 
             if self.should_check_firmware():
-                self.firmware_update_time = time.time()
                 await self.manager.check_firmware()
+                self.firmware_update_time = time.time()
         except VeSyncLoginError as err:
             raise ConfigEntryAuthFailed(
                 translation_domain=DOMAIN, translation_key="invalid_auth"
