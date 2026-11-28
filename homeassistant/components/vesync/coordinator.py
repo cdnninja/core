@@ -30,13 +30,14 @@ class VeSyncDataCoordinator(DataUpdateCoordinator[None]):
 
     config_entry: VesyncConfigEntry
     update_time: float | None = None
-    firmware_update_time: float | None = None
 
     def __init__(
         self, hass: HomeAssistant, config_entry: VesyncConfigEntry, manager: VeSync
     ) -> None:
         """Initialize."""
         self.manager = manager
+        # Firmware is checked during config entry setup
+        self.firmware_update_time = time.time()
 
         super().__init__(
             hass,
@@ -55,9 +56,6 @@ class VeSyncDataCoordinator(DataUpdateCoordinator[None]):
 
     def should_check_firmware(self) -> bool:
         """Test if the firmware check interval has been exceeded."""
-        if self.firmware_update_time is None:
-            return True
-
         return time.time() - self.firmware_update_time >= UPDATE_INTERVAL_FIRMWARE
 
     @override

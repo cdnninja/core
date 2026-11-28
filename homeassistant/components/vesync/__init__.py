@@ -1,7 +1,6 @@
 """VeSync integration."""
 
 import logging
-import time
 
 from pyvesync import VeSync
 from pyvesync.utils.errors import (
@@ -82,7 +81,6 @@ async def async_setup_entry(
     await manager.check_firmware()
 
     config_entry.runtime_data = VeSyncDataCoordinator(hass, config_entry, manager)
-    config_entry.runtime_data.firmware_update_time = time.time()
 
     # Complete version migration now that we have the account_id
     if config_entry.minor_version == 2:
