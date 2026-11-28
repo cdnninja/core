@@ -449,6 +449,8 @@ async def test_purifier_auto_preference(
 def test_auto_preference_unsupported_device() -> None:
     """Test setting an auto preference on a device without one raises."""
     with pytest.raises(HomeAssistantError) as exc_info:
-        _set_purifier_auto_preference(Mock(spec=[]), "quiet")
+        _set_purifier_auto_preference(
+            Mock(product_type=ProductTypes.HUMIDIFIER), "quiet"
+        )
 
     assert exc_info.value.translation_key == "auto_preference_not_supported"

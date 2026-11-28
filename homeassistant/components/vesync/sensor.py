@@ -103,6 +103,8 @@ END_TIME_VARIANCE_MINUTES = timedelta(seconds=90)
 
 def _get_air_quality(device: VeSyncBaseDevice) -> str | None:
     """Return the air quality level, mapping unknown to None."""
+    if not is_purifier(device):
+        return None
     value = device.state.air_quality_string
     if value == str(AirQualityLevel.UNKNOWN):
         return None
